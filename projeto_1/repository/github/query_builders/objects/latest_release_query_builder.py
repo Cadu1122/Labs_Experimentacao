@@ -1,4 +1,4 @@
-from projeto_1.repository.github.query_builders.query_builder import BaseQuery, QueryBuilder
+from repository.github.query_builders.query_builder import BaseQuery, QueryBuilder
 
 
 class LatestReleaseQueryBuilder(BaseQuery):

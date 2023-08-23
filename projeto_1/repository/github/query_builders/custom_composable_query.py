@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from projeto_1.repository.github.query_builders.query_builder import QueryBuilder
+from repository.github.query_builders.query_builder import QueryBuilder
 
 
 @dataclass

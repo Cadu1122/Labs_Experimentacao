@@ -1,18 +1,18 @@
 import base64
 from pathlib import Path
-from projeto_1.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
-from projeto_1.repository.data_persistance.models.serialize_rules import SerializeRule
-from projeto_1.repository.github.query_builders.functions.search_query_builder import SearchQueryBuilder, SearchTypes
-from projeto_1.repository.github.query_builders.objects.issues_query_builder import IssueStates, IssuesQueryBuilder
-from projeto_1.repository.github.query_builders.objects.latest_release_query_builder import LatestReleaseQueryBuilder
-from projeto_1.repository.github.query_builders.objects.pull_requests_query_builder import PullRequestsQueryBuilder, PullRequestsState
-from projeto_1.repository.github.query_builders.objects.releases_query_builder import ReleaseOrderByDirection, ReleaseOrderByField, ReleasesQueryBuilder
-from projeto_1.repository.github.query_builders.objects.repository_query_builder import RepositoryQueryBuilder
-from projeto_1.repository.github.query_builders.objects.stargazers_query_builder import StargazersQueryBuilder
-from projeto_1.shared.async_utils import create_async_task, get_async_results
-from projeto_1.shared.graphql_client import GraphqlClient
-from projeto_1.core.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH, GITHUB_AUTH_TOKEN
-from projeto_1.shared.logger import get_logger
+from repository.data_persistance.data_persistence_repository import DataPersistanceRepository
+from repository.data_persistance.models.serialize_rules import SerializeRule
+from repository.github.query_builders.functions.search_query_builder import SearchQueryBuilder, SearchTypes
+from repository.github.query_builders.objects.issues_query_builder import IssueStates, IssuesQueryBuilder
+from repository.github.query_builders.objects.latest_release_query_builder import LatestReleaseQueryBuilder
+from repository.github.query_builders.objects.pull_requests_query_builder import PullRequestsQueryBuilder, PullRequestsState
+from repository.github.query_builders.objects.releases_query_builder import ReleaseOrderByDirection, ReleaseOrderByField, ReleasesQueryBuilder
+from repository.github.query_builders.objects.repository_query_builder import RepositoryQueryBuilder
+from repository.github.query_builders.objects.stargazers_query_builder import StargazersQueryBuilder
+from shared.async_utils import create_async_task, get_async_results
+from shared.graphql_client import GraphqlClient
+from core.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH, GITHUB_AUTH_TOKEN
+from shared.logger import get_logger
 
 
 logger = get_logger(__name__)

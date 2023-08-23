@@ -1,7 +1,7 @@
 import csv
 from pathlib import Path
 from typing import Callable
-from projeto_1.repository.data_persistance.models.serialize_rules import SerializeRule
+from repository.data_persistance.models.serialize_rules import SerializeRule
 
 class DataPersistanceRepository:
     

@@ -4,8 +4,8 @@ import json
 import aiohttp
 from aiohttp import ClientResponse
 
-from projeto_1.shared.exceptions.grapql_client_exceptions import Unauthorized, UnexpectedError
-from projeto_1.core.constants import PERSIT_GRAPQHL_QUERIES
+from shared.exceptions.grapql_client_exceptions import Unauthorized, UnexpectedError
+from core.constants import PERSIT_GRAPQHL_QUERIES
 
 class GraphqlClient:
     async def execute_query(
@@ -15,7 +15,7 @@ class GraphqlClient:
         auth_token: str
     ):
         if PERSIT_GRAPQHL_QUERIES:
-            now = datetime.now().strftime('%d-%m-%Y_%H:%M:%S.%f')
+            now = datetime.now().strftime('%d-%m-%Y_%H-%M-%S.%f')
             with open(f'resources/debug/{now}', 'w+') as f:
                 f.write(query)
         authed_header = self.__get_auth_header(auth_token)
