@@ -1,14 +1,14 @@
 import csv
 from pathlib import Path
-
-from projeto_1.repository.data_persistance.models.column import Column
+from typing import Callable
+from projeto_1.repository.data_persistance.models.serialize_rules import SerializeRule
 
 class DataPersistanceRepository:
     
     def persist_data_in_csv(
         self,
         file_path: Path,
-        columns: tuple[Column],
+        columns: tuple[SerializeRule],
         data: list[dict]
     ):
         '''
@@ -30,8 +30,8 @@ class DataPersistanceRepository:
             >>> {'foo': {'bar': {'baz': {...} } } }
             >>> {'foo': {'bar': [ {'baz':  VALUE} ] } }
         '''
-        column_names = [colum.name for colum in columns]
-        rows = self.__transform_data_dict_in_row(
+        column_names = [colum.column_name for colum in columns]
+        rows = self.__transform_data_in_row(
             columns,
             data
         )
@@ -39,10 +39,39 @@ class DataPersistanceRepository:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(column_names)
             csv_writer.writerows(rows)
+
+    def get_persited_data_in_csv(
+        self,
+        file_path: Path,
+        mapper_function: Callable[[tuple[any], tuple[str]], any] = None
+    ):
+        result: list[dict] = []
+        mapper_function = mapper_function if mapper_function else self.__transform_row_in_data
+        with open(file_path,  'r') as f:
+            csv_reader = csv.reader(f)
+            columns = next(csv_reader)
+            for row in csv_reader:
+                result.append(mapper_function(row, columns))
+        return result
+
     
-    def __transform_data_dict_in_row(
+    def __transform_row_in_data(
+        self,
+        row: tuple[any],
+        columns: tuple[str]
+    ):
+        result = {}
+        for i,column_name in enumerate(columns):
+            value = row[i]
+            if ';' in value:
+                value = ';'.join(value)
+            result[column_name] = value
+        return result
+            
+ 
+    def __transform_data_in_row(
         self, 
-        columns: tuple[Column],
+        columns: tuple[SerializeRule],
         data: list[dict]
     ):
         '''

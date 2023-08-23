@@ -12,6 +12,7 @@ github_repository = GithubRepository(
 
 asyncio.run(
     github_repository.get_most_famous_repositories(
-        qtd_of_repositories=100
+        qtd_of_repositories=100,
+        prefer_to_use_persited_repositories=False
     )
 )

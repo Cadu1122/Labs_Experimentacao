@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Column:
-    name: str
+class SerializeRule:
+    column_name: str
     dict_deserialize_rule: tuple[str]
     '''
         A tuple with the path of some value inside a dict\n

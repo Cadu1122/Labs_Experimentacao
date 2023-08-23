@@ -7,14 +7,19 @@ class RepositoryQueryBuilder(BaseQuery):
         self,
         has_total_count: bool = False,
         has_created_at: bool = False,
-        has_name: bool = False
+        has_name: bool = False,
+        has_primary_language: bool = False
     ):
         super().__init__(has_created_at=has_created_at,has_total_count=has_total_count)
         self.__composable_queries: list[CustomComposableQuery] = []
+        self.__has_primary_language = has_primary_language
         self.__has_name = has_name
 
     def with_name(self):
         self.__has_name = True
+    
+    def with_primary_language(self):
+        self.__has_primary_language = True
     
     def compose_with_query(
         self, 
@@ -39,12 +44,14 @@ class RepositoryQueryBuilder(BaseQuery):
         name = 'name' if self.__has_name else ''
         created_at = 'createdAt' if self._has_created_at else '' 
         total_count = 'totalCount' if self._has_total_count else ''
+        primary_language = 'primaryLanguage { name }' if self.__has_primary_language else ''
         queries = self.__format_queries()
         return f'''
             Repository {{
                 {name}
                 {created_at}
                 {total_count}
+                {primary_language}
                 {queries}
             }}
         '''

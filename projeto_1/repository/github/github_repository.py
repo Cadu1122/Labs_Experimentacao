@@ -1,10 +1,9 @@
 import base64
 from pathlib import Path
 from projeto_1.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
-from projeto_1.repository.data_persistance.models.column import Column
+from projeto_1.repository.data_persistance.models.serialize_rules import SerializeRule
 from projeto_1.repository.github.query_builders.functions.search_query_builder import SearchQueryBuilder, SearchTypes
 from projeto_1.repository.github.query_builders.objects.issues_query_builder import IssueStates, IssuesQueryBuilder
-from projeto_1.repository.github.query_builders.objects.languages_query_builder import LanguagesQueryBuilder
 from projeto_1.repository.github.query_builders.objects.latest_release_query_builder import LatestReleaseQueryBuilder
 from projeto_1.repository.github.query_builders.objects.pull_requests_query_builder import PullRequestsQueryBuilder, PullRequestsState
 from projeto_1.repository.github.query_builders.objects.releases_query_builder import ReleaseOrderByDirection, ReleaseOrderByField, ReleasesQueryBuilder
@@ -46,11 +45,13 @@ class GithubRepository:
             - Total of merged Pull Requests
             - Total of releases
             - Date of the latest release
+            - Primary language
             - Total of stars
         '''
         repository = RepositoryQueryBuilder(
             has_created_at=True,
-            has_name=True
+            has_name=True,
+            has_primary_language=True
         )
         repository.compose_with_query(
           IssuesQueryBuilder(
@@ -83,12 +84,6 @@ class GithubRepository:
             has_total_count=True,
             has_created_at=True
           )
-        )
-        repository.compose_with_query(
-          LanguagesQueryBuilder(
-            has_name=True,
-            first=100
-          )   
         )
         repository.compose_with_query(
             StargazersQueryBuilder(
@@ -135,13 +130,13 @@ class GithubRepository:
           Persist on a CSV the response of the search request
         '''
         columns = (
-            Column(name='name', dict_deserialize_rule=('name',)),
-            Column(name='created_at', dict_deserialize_rule=('createdAt',)),
-            Column(name='total_of_stars', dict_deserialize_rule=('total_of_starts', 'totalCount')),
-            Column(name='total_of_closed_issues', dict_deserialize_rule=('total_of_closed_issues', 'totalCount')),
-            Column(name='total_of_issues', dict_deserialize_rule=('total_of_issues', 'totalCount')),
-            Column(name='last_release_date', dict_deserialize_rule=('latestRelease', 'totalCount')),
-            Column(name='languages', dict_deserialize_rule=('languages', 'nodes', 'name'))
+            SerializeRule(column_name='name', dict_deserialize_rule=('name',)),
+            SerializeRule(column_name='created_at', dict_deserialize_rule=('createdAt',)),
+            SerializeRule(column_name='total_of_stars', dict_deserialize_rule=('total_of_starts', 'totalCount')),
+            SerializeRule(column_name='total_of_closed_issues', dict_deserialize_rule=('total_of_closed_issues', 'totalCount')),
+            SerializeRule(column_name='total_of_issues', dict_deserialize_rule=('total_of_issues', 'totalCount')),
+            SerializeRule(column_name='last_release_date', dict_deserialize_rule=('latestRelease', 'createdAt')),
+            SerializeRule(column_name='primary_language', dict_deserialize_rule=('primaryLanguage', 'name'))
         )
         nodes = []
         for value in values:
@@ -152,7 +147,11 @@ class GithubRepository:
             data=nodes
         )
 
-    async def get_most_famous_repositories(self, qtd_of_repositories = 1_000):
+    async def get_most_famous_repositories(
+        self, 
+        qtd_of_repositories = 1_000,
+        prefer_to_use_persited_repositories: bool = True
+    ):
         '''
           ---
           Get the most famous repositories based on the quantity of starts
@@ -164,8 +163,13 @@ class GithubRepository:
             A list of dicts of the most famous repositories
         '''
         # TODO:
-        # - Put a option to consume the data from the csv over calling the api
-        # - Put a option to print the query
+        # - Fetch repositories if local file isn't filled
+        # - Create model for repository - prefer Typedict over dataclass or something
+        persitance_file_path = Path('resources/repositories.csv')
+        if prefer_to_use_persited_repositories:
+            return self.__data_persistance_repository.get_persited_data_in_csv(
+                file_path=persitance_file_path
+            )
         logger.debug(f'Preparing to obtain the {qtd_of_repositories} famous repositories')
         search_query = SearchQueryBuilder(
             first=DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH,
