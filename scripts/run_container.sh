@@ -1,0 +1,1 @@
+docker run -v $(pwd):/app -it lab_experimentacao bash

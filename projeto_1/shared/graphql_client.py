@@ -4,8 +4,8 @@ import json
 import aiohttp
 from aiohttp import ClientResponse
 
-from shared.exceptions.grapql_client_exceptions import Unauthorized, UnexpectedError
-from core.constants import PERSIT_GRAPQHL_QUERIES
+from projeto_1.shared.exceptions.grapql_client_exceptions import Unauthorized, UnexpectedError
+from projeto_1.core.constants import PERSIT_GRAPQHL_QUERIES
 
 class GraphqlClient:
     async def execute_query(

@@ -1,5 +1,5 @@
-from core.constants import TOTAL_QUANTITY_OF_REPOSITORIES
-from repository.github.github_repository import GithubRepository
+from projeto_1.core.constants import TOTAL_QUANTITY_OF_REPOSITORIES
+from projeto_1.repository.github.github_repository import GithubRepository
 
 
 class AnalyzerService:
