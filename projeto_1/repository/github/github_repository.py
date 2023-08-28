@@ -11,8 +11,9 @@ from projeto_1.repository.github.query_builders.objects.repository_query_builder
 from projeto_1.repository.github.query_builders.objects.stargazers_query_builder import StargazersQueryBuilder
 from projeto_1.shared.async_utils import create_async_task, get_async_results
 from projeto_1.shared.graphql_client import GraphqlClient
-from projeto_1.core.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH, GITHUB_AUTH_TOKEN
+from projeto_1.core.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH
 from projeto_1.shared.logger import get_logger
+from projeto_1.services.token_service import get_token
 
 
 logger = get_logger(__name__)
@@ -132,11 +133,13 @@ class GithubRepository:
         columns = (
             SerializeRule(column_name='name', dict_deserialize_rule=('name',)),
             SerializeRule(column_name='created_at', dict_deserialize_rule=('createdAt',)),
+            SerializeRule(column_name='total_of_accepted_pull_requests', dict_deserialize_rule=('pullRequests', 'totalCount')),
             SerializeRule(column_name='total_of_stars', dict_deserialize_rule=('total_of_starts', 'totalCount')),
             SerializeRule(column_name='total_of_closed_issues', dict_deserialize_rule=('total_of_closed_issues', 'totalCount')),
             SerializeRule(column_name='total_of_issues', dict_deserialize_rule=('total_of_issues', 'totalCount')),
             SerializeRule(column_name='last_release_date', dict_deserialize_rule=('latestRelease', 'createdAt')),
-            SerializeRule(column_name='primary_language', dict_deserialize_rule=('primaryLanguage', 'name'))
+            SerializeRule(column_name='primary_language', dict_deserialize_rule=('primaryLanguage', 'name')),
+            SerializeRule(column_name='total_of_releases', dict_deserialize_rule=('releases', 'totalCount')),
         )
         nodes = []
         for value in values:
@@ -191,7 +194,7 @@ class GithubRepository:
                   self.__graphql_client.execute_query,
                   BASE_GRAPTHQL_PATH,
                   query,
-                  GITHUB_AUTH_TOKEN
+                  get_token()
                 )
             )
         logger.debug('Executing queries...')
