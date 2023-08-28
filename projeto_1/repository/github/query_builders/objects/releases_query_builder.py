@@ -1,5 +1,5 @@
 from enum import Enum
-from repository.github.query_builders.query_builder import BaseQuery
+from projeto_1.repository.github.query_builders.query_builder import BaseQuery
 
 class ReleaseOrderByField(Enum):
     CREATED_AT = 'CREATED_AT'

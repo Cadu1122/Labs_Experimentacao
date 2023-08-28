@@ -1,4 +1,4 @@
-from repository.github.query_builders.query_builder import BaseQuery
+from projeto_1.repository.github.query_builders.query_builder import BaseQuery
 
 
 class StargazersQueryBuilder(BaseQuery):

@@ -1,7 +1,7 @@
 import asyncio
-from repository.data_persistance.data_persistence_repository import DataPersistanceRepository
-from repository.github.github_repository import GithubRepository
-from shared.graphql_client import GraphqlClient
+from projeto_1.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
+from projeto_1.repository.github.github_repository import GithubRepository
+from projeto_1.shared.graphql_client import GraphqlClient
 
 grapql_client = GraphqlClient()
 data_persistance_repository = DataPersistanceRepository()
