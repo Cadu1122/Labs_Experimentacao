@@ -9,10 +9,9 @@ github_repository = GithubRepository(
     graphql_client=grapql_client,
     data_persistance_repository=data_persistance_repository
 )
-
 asyncio.run(
     github_repository.get_most_famous_repositories(
-        qtd_of_repositories=100,
+        qtd_of_repositories=1_000,
         prefer_to_use_persited_repositories=False
     )
 )
