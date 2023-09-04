@@ -1,4 +1,6 @@
 import base64
+import pandas as pd
+from matplotlib.pyplot import show
 from pathlib import Path
 from projeto_1.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
 from projeto_1.repository.data_persistance.models.serialize_rules import SerializeRule
@@ -205,4 +207,12 @@ class GithubRepository:
         self.__persit_search_response(responses)
         logger.debug('Responses persisted!')
 
+        self.create_boxplot(responses)
+
         return responses
+    
+    def create_boxplot(self, response):
+        csv = pd.read_csv('resources/repositories.csv')
+        csv.plot(kind='box')
+        show()
+        
