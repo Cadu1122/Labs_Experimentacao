@@ -35,7 +35,7 @@ class DataPersistanceRepository:
             columns,
             data
         )
-        with open(file_path, 'w+') as csv_file:
+        with open(file_path, 'w+', newline='') as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(column_names)
             csv_writer.writerows(rows)

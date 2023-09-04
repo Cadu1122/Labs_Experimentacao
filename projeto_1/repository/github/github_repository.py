@@ -212,7 +212,7 @@ class GithubRepository:
         return responses
     
     def create_boxplot(self, response):
-        csv = pd.read_csv('resources/repositories.csv')
-        csv.plot(kind='box')
+        csv = pd.read_csv(filepath_or_buffer='resources/repositories.csv')
+        csv.boxplot(column=['total_of_accepted_pull_requests', 'total_of_closed_issues'])
         show()
         
