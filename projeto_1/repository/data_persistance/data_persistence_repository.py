@@ -1,4 +1,5 @@
 import csv
+from datetime import date, datetime
 from pathlib import Path
 from typing import Callable
 from projeto_1.repository.data_persistance.models.serialize_rules import SerializeRule
@@ -67,8 +68,8 @@ class DataPersistanceRepository:
                 value = ';'.join(value)
             result[column_name] = value
         return result
-            
- 
+
+
     def __transform_data_in_row(
         self, 
         columns: tuple[SerializeRule],
@@ -98,15 +99,21 @@ class DataPersistanceRepository:
         data: dict, 
         deserialize_rule: tuple[str]
     ):
+        def safe_get_value(value, path):
+            value = value.get(path)
+            if isinstance(value, date) or isinstance(value, datetime):
+                return value.isoformat()
+            return value
+
         latest_obtained_value = data
         accumulated_list_values = []
         for data_path in deserialize_rule:
             if latest_obtained_value:
-                if type(latest_obtained_value) == list:
+                if isinstance(latest_obtained_value, list):
                     for value in latest_obtained_value:
-                        accumulated_list_values.append(value.get(data_path))
+                        accumulated_list_values.append(safe_get_value(value, data_path))
                 else:
-                    latest_obtained_value = latest_obtained_value.get(data_path)
+                    latest_obtained_value = safe_get_value(latest_obtained_value, data_path)
             else:
                 break
         if accumulated_list_values:

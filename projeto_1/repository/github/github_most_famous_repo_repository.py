@@ -1,26 +1,28 @@
 import base64
-import pandas as pd
-from matplotlib.pyplot import show
+from datetime import date, datetime
 from pathlib import Path
+from typing import Callable
+from projeto_1.models.repository import Repository
 from projeto_1.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
 from projeto_1.repository.data_persistance.models.serialize_rules import SerializeRule
 from projeto_1.repository.github.query_builders.functions.search_query_builder import SearchQueryBuilder, SearchTypes
 from projeto_1.repository.github.query_builders.objects.issues_query_builder import IssueStates, IssuesQueryBuilder
-from projeto_1.repository.github.query_builders.objects.latest_release_query_builder import LatestReleaseQueryBuilder
 from projeto_1.repository.github.query_builders.objects.pull_requests_query_builder import PullRequestsQueryBuilder, PullRequestsState
 from projeto_1.repository.github.query_builders.objects.releases_query_builder import ReleaseOrderByDirection, ReleaseOrderByField, ReleasesQueryBuilder
 from projeto_1.repository.github.query_builders.objects.repository_query_builder import RepositoryQueryBuilder
 from projeto_1.repository.github.query_builders.objects.stargazers_query_builder import StargazersQueryBuilder
 from projeto_1.shared.async_utils import create_async_task, get_async_results
+from projeto_1.shared.date_utils import datetime_str_to_date, str_to_datetime
+from projeto_1.shared.dict_utils import safe_get_value
 from projeto_1.shared.graphql_client import GraphqlClient
-from projeto_1.core.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH
+from projeto_1.core.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
 from projeto_1.shared.logger import get_logger
 from projeto_1.services.token_service import get_token
 
 
 logger = get_logger(__name__)
 
-class GithubRepository:
+class GithubMostFamousRepoRepository:
 
     def __init__(
           self,
@@ -47,14 +49,15 @@ class GithubRepository:
             - Total of CLOSED issues
             - Total of merged Pull Requests
             - Total of releases
-            - Date of the latest release
+            - Date of the latest update
             - Primary language
             - Total of stars
         '''
         repository = RepositoryQueryBuilder(
             has_created_at=True,
             has_name=True,
-            has_primary_language=True
+            has_primary_language=True,
+            has_updated_at=True
         )
         repository.compose_with_query(
           IssuesQueryBuilder(
@@ -83,30 +86,24 @@ class GithubRepository:
           )
         )
         repository.compose_with_query(
-          LatestReleaseQueryBuilder(
-            has_total_count=True,
-            has_created_at=True
-          )
-        )
-        repository.compose_with_query(
             StargazersQueryBuilder(
               has_total_count=True
             ),
-            custom_attr='total_of_starts'
+            custom_attr='total_of_stars'
         )
         return repository
 
     def __get_all__possible_search_queries(
         self, 
         base_search_query: SearchQueryBuilder, 
-        repository_quantity: int
+        data_quantity: int
     ):
         '''
           Mounts every query that can be done based on the repository quantity\n
           ---
           Params:
             base_search_query: The base search query to be made
-            repository_quantity: The total of repositories that need to be obtained based on the search query
+            data_quantity: The total of data that need to be obtained based on the search query
           ---
           Return:
             A list of all queries that need to be done to obtain the specified quantity of repositories 
@@ -119,7 +116,7 @@ class GithubRepository:
               the value of the DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH constant
         '''
         queries = [base_search_query.build_query()]
-        quantity_of_queries = repository_quantity // DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH
+        quantity_of_queries = data_quantity // DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH
         for i in range(quantity_of_queries - 1):
             i += 1
             cursor = self.__create_cursor(
@@ -128,38 +125,100 @@ class GithubRepository:
             queries.append(base_search_query.build_query(cursor))
         return queries
 
-    def __persit_search_response(self, values: list[dict]):
+    def __persit_most_famous_search_response(self, values: list[Repository]):
         '''
           Persist on a CSV the response of the search request
         '''
         columns = (
             SerializeRule(column_name='name', dict_deserialize_rule=('name',)),
-            SerializeRule(column_name='created_at', dict_deserialize_rule=('createdAt',)),
-            SerializeRule(column_name='total_of_accepted_pull_requests', dict_deserialize_rule=('pullRequests', 'totalCount')),
-            SerializeRule(column_name='total_of_stars', dict_deserialize_rule=('total_of_starts', 'totalCount')),
-            SerializeRule(column_name='total_of_closed_issues', dict_deserialize_rule=('total_of_closed_issues', 'totalCount')),
-            SerializeRule(column_name='total_of_issues', dict_deserialize_rule=('total_of_issues', 'totalCount')),
-            SerializeRule(column_name='last_release_date', dict_deserialize_rule=('latestRelease', 'createdAt')),
-            SerializeRule(column_name='primary_language', dict_deserialize_rule=('primaryLanguage', 'name')),
-            SerializeRule(column_name='total_of_releases', dict_deserialize_rule=('releases', 'totalCount')),
+            SerializeRule(column_name='created_at', dict_deserialize_rule=('created_at',)),
+            SerializeRule(column_name='merged_prs', dict_deserialize_rule=('merged_prs',)),
+            SerializeRule(column_name='total_of_stars', dict_deserialize_rule=('stars',)),
+            SerializeRule(column_name='total_of_closed_issues', dict_deserialize_rule=('closed_issues',)),
+            SerializeRule(column_name='total_of_issues', dict_deserialize_rule=('total_of_issues',)),
+            SerializeRule(column_name='last_update_date', dict_deserialize_rule=('last_update_date',)),
+            SerializeRule(column_name='primary_language', dict_deserialize_rule=('primary_language',)),
+            SerializeRule(column_name='total_of_releases', dict_deserialize_rule=('total_of_releases',)),
         )
-        nodes = []
-        for value in values:
-            nodes.extend(value.get('data').get('search').get('nodes'))
         self.__data_persistance_repository.persist_data_in_csv(
             file_path=Path('resources/repositories.csv'),
             columns=columns,
-            data=nodes
+            data=values
         )
+
+    def __repository_from_csv_row(self, row: tuple[any]):
+        return Repository(
+            name=row[0],
+            created_at=date.fromisoformat(row[1]),
+            merged_prs=int(row[2]),
+            stars=int(row[3]),
+            closed_issues=int(row[4]),
+            total_of_issues=int(row[5]),
+            last_update_date=datetime.fromisoformat(row[6]),
+            primary_language=row[7],
+            total_of_releases=int(row[8])
+        )
+
+    def __get_famous_repositories_from_csv(self):
+      repositories: list[Repository] = []
+      persitance_file_path = Path('resources/repositories.csv')
+      self.__data_persistance_repository.get_persited_data_in_csv(
+              file_path=persitance_file_path,
+              mapper_function=lambda row, _: repositories.append(self.__repository_from_csv_row(row))
+      )
+      return repositories
+    
+    def __get_most_famous_repositories_reponse_handler(self, response: list[dict[str, any]]):
+        repositories: list[Repository] = []
+        get_total_count_from_attr = lambda value, attr: value.get(attr).get('totalCount')
+        data = safe_get_value(response, ('data',), default_value={})
+        for value in data.get('search', {}).get('nodes', []):
+            primary_language =  safe_get_value(value, ('primaryLanguage', 'name'))
+            repositories.append(Repository(
+                name=value.get('name'),
+                created_at=datetime_str_to_date(value.get('createdAt')),
+                primary_language=primary_language,
+                closed_issues=get_total_count_from_attr(value, 'total_of_closed_issues'),
+                total_of_issues=get_total_count_from_attr(value, 'total_of_issues'),
+                merged_prs=get_total_count_from_attr(value, 'pullRequests'),
+                total_of_releases=get_total_count_from_attr(value, 'releases'),
+                last_update_date=str_to_datetime(value.get('updatedAt')),
+                stars=get_total_count_from_attr(value, 'total_of_stars')
+            ))
+        return repositories
+
+    async def __execute_queries(self, queries: list[str], response_handler: Callable[[any], any]):
+        tasks = []
+        for query in queries:
+            tasks.append(
+                create_async_task(
+                  self.__graphql_client.execute_query,
+                  path=BASE_GRAPTHQL_PATH,
+                  query=query,
+                  auth_token=get_token()
+                )
+            )
+        logger.debug('Executing queries...')
+        responses = await get_async_results(tasks)
+        logger.debug('Queries executed!')
+
+        logger.debug('Mapping values')
+        result = []
+        for response in responses:
+            response = response_handler(response)
+            result.extend(response)
+        logger.debug(f'{len(result)} values mapped!')
+
+        return result
 
     async def get_most_famous_repositories(
         self, 
-        qtd_of_repositories = 1_000,
+        qtd_of_repositories = TOTAL_QUANTITY_OF_REPOSITORIES,
         prefer_to_use_persited_repositories: bool = True
     ):
         '''
           ---
-          Get the most famous repositories based on the quantity of starts
+          Get the most famous repositories based on the quantity of stars
           ---
           Params:
             qtd_of_repositories: The quantity of repositories, default as 1_000
@@ -167,14 +226,12 @@ class GithubRepository:
           Returns:
             A list of dicts of the most famous repositories
         '''
-        # TODO:
-        # - Fetch repositories if local file isn't filled
-        # - Create model for repository - prefer Typedict over dataclass or something
-        persitance_file_path = Path('resources/repositories.csv')
+        repositories: list[Repository] = []
+        
         if prefer_to_use_persited_repositories:
-            return self.__data_persistance_repository.get_persited_data_in_csv(
-                file_path=persitance_file_path
-            )
+            if repositories := self.__get_famous_repositories_from_csv():
+                return repositories
+
         logger.debug(f'Preparing to obtain the {qtd_of_repositories} famous repositories')
         search_query = SearchQueryBuilder(
             first=DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH,
@@ -186,33 +243,15 @@ class GithubRepository:
         logger.debug('Building queries...')
         queries = self.__get_all__possible_search_queries(
             base_search_query=search_query,
-            repository_quantity=qtd_of_repositories
+            data_quantity=qtd_of_repositories
         )
         logger.debug(f'{len(queries)} queries mounted!')
-        tasks = []
-        for query in queries:
-            tasks.append(
-                create_async_task(
-                  self.__graphql_client.execute_query,
-                  BASE_GRAPTHQL_PATH,
-                  query,
-                  get_token()
-                )
-            )
-        logger.debug('Executing queries...')
-        responses = await get_async_results(tasks)
-        logger.debug(f'Queries executed! {len(responses)} responses obtained')
+
+        repositories: list[Repository] = await self.__execute_queries(queries, self.__get_most_famous_repositories_reponse_handler)
+        logger.debug(f'Queries executed! {len(repositories)} responses obtained')
 
         logger.debug('Persisting responses...')
-        self.__persit_search_response(responses)
+        self.__persit_most_famous_search_response(repositories)
         logger.debug('Responses persisted!')
 
-        self.create_boxplot(responses)
-
-        return responses
-    
-    def create_boxplot(self, response):
-        csv = pd.read_csv(filepath_or_buffer='resources/repositories.csv')
-        csv.boxplot(column=['total_of_accepted_pull_requests', 'total_of_closed_issues'])
-        show()
-        
+        return repositories
