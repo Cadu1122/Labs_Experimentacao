@@ -1,6 +1,7 @@
 from datetime import datetime
 from http import HTTPStatus
 import json
+from typing import Callable
 import aiohttp
 from aiohttp import ClientResponse
 
@@ -12,7 +13,8 @@ class GraphqlClient:
         self,
         path: str, 
         query: str,
-        auth_token: str
+        auth_token: str,
+        custom_response_handler: Callable[[any], any] = lambda value: value
     ):
         if PERSIT_GRAPQHL_QUERIES:
             now = datetime.now().strftime('%d-%m-%Y_%H-%M-%S.%f')
@@ -22,7 +24,7 @@ class GraphqlClient:
         data = json.dumps({'query': query})
         async with aiohttp.ClientSession(headers=authed_header) as session:
             async with session.post(path, data=data) as response:
-                return await self.__handle_response(response)
+                return await self.__handle_response(response, custom_response_handler)
     
 
     def __get_auth_header(self, token: str):
@@ -30,13 +32,13 @@ class GraphqlClient:
             'Authorization': f'Bearer {token}'
         }
 
-    async def __handle_response(self, response: ClientResponse):
+    async def __handle_response(self, response: ClientResponse, custom_response_handler: Callable[[any], any] = lambda value: value):
         payload = await response.json()
         status_code = response.status
         if status_code > HTTPStatus.OK:
             raw_error = str(await response.content.read())
             self.__handle_error(status_code, raw_error)
-        return payload
+        return custom_response_handler(payload)
 
     def __handle_error(self, status_code: int, error: str):
         if status_code == HTTPStatus.INTERNAL_SERVER_ERROR:

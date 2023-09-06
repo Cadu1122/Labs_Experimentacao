@@ -1,17 +1,13 @@
-import asyncio
-from projeto_1.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
-from projeto_1.repository.github.github_repository import GithubRepository
-from projeto_1.shared.graphql_client import GraphqlClient
+from projeto_1.core.class_container import ClassContainer
+from projeto_1.core.file_persitance import ensure_all_necessary_paths_exist
+from projeto_1.shared.async_utils import run_async_function
 
-grapql_client = GraphqlClient()
-data_persistance_repository = DataPersistanceRepository()
-github_repository = GithubRepository(
-    graphql_client=grapql_client,
-    data_persistance_repository=data_persistance_repository
-)
-asyncio.run(
-    github_repository.get_most_famous_repositories(
-        qtd_of_repositories=1_000,
-        prefer_to_use_persited_repositories=False
-    )
-)
+ensure_all_necessary_paths_exist()
+
+@run_async_function
+async def start():
+    class_container = ClassContainer()
+    analyzer_servcice = class_container.get_analyzer_service()
+    await analyzer_servcice.analyse_most_famous_repositories()
+
+start()
