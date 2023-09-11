@@ -54,10 +54,8 @@ class GithubMostFamousRepoRepository:
             - Total of stars
         '''
         repository = RepositoryQueryBuilder(
-            has_created_at=True,
             has_name=True,
-            has_primary_language=True,
-            has_updated_at=True
+            has_url=True
         )
         repository.compose_with_query(
           IssuesQueryBuilder(
@@ -131,14 +129,9 @@ class GithubMostFamousRepoRepository:
         '''
         columns = (
             SerializeRule(column_name='name', dict_deserialize_rule=('name',)),
-            SerializeRule(column_name='created_at', dict_deserialize_rule=('created_at',)),
-            SerializeRule(column_name='merged_prs', dict_deserialize_rule=('merged_prs',)),
             SerializeRule(column_name='total_of_stars', dict_deserialize_rule=('stars',)),
-            SerializeRule(column_name='total_of_closed_issues', dict_deserialize_rule=('closed_issues',)),
-            SerializeRule(column_name='total_of_issues', dict_deserialize_rule=('total_of_issues',)),
-            SerializeRule(column_name='last_update_date', dict_deserialize_rule=('last_update_date',)),
             SerializeRule(column_name='primary_language', dict_deserialize_rule=('primary_language',)),
-            SerializeRule(column_name='total_of_releases', dict_deserialize_rule=('total_of_releases',)),
+            SerializeRule(column_name='url', dict_deserialize_rule=('url',)),
         )
         self.__data_persistance_repository.persist_data_in_csv(
             file_path=Path('resources/repositories.csv'),
@@ -236,7 +229,7 @@ class GithubMostFamousRepoRepository:
         search_query = SearchQueryBuilder(
             first=DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH,
             search_type=SearchTypes.REPOSITORY,
-            search_query="stars:>100",
+            search_query="stars:>100, language:java",
             has_page_info=True
         )
         search_query.with_repository(self.__mount_famous_repositories_query())
