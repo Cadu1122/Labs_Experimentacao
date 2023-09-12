@@ -18,6 +18,7 @@ class RepositoryQueryBuilder(BaseQuery):
         self.__has_name = has_name
         self.__has_updated_at = has_updated_at
         self.__has_url = has_url
+        self.__has_created_at = has_created_at
 
     def with_name(self):
         self.__has_name = True
@@ -49,7 +50,7 @@ class RepositoryQueryBuilder(BaseQuery):
 
     def build_query(self) -> str:
         name = 'name' if self.__has_name else ''
-        created_at = 'createdAt' if self._has_created_at else '' 
+        created_at = 'createdAt' if self.__has_created_at else '' 
         total_count = 'totalCount' if self._has_total_count else ''
         primary_language = 'primaryLanguage { name }' if self.__has_primary_language else ''
         updated_at = 'updatedAt' if self.__has_updated_at else ''

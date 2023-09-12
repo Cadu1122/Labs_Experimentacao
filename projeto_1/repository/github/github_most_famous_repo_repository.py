@@ -1,5 +1,5 @@
 import base64
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Callable
 from projeto_1.models.repository import Repository
@@ -18,6 +18,7 @@ from projeto_1.shared.graphql_client import GraphqlClient
 from projeto_1.core.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
 from projeto_1.shared.logger import get_logger
 from projeto_1.services.token_service import get_token
+from projeto_1.repository.github.query_builders.objects.owner_query_builder import OwnerQueryBuilder
 
 
 logger = get_logger(__name__)
@@ -55,14 +56,8 @@ class GithubMostFamousRepoRepository:
         '''
         repository = RepositoryQueryBuilder(
             has_name=True,
-            has_url=True
-        )
-        repository.compose_with_query(
-          IssuesQueryBuilder(
-            has_total_count=True,
-            state=IssueStates.CLOSED
-          ),
-          custom_attr='total_of_closed_issues'
+            has_url=True,
+            has_created_at=True
         )
         repository.compose_with_query(
           IssuesQueryBuilder(
@@ -71,23 +66,22 @@ class GithubMostFamousRepoRepository:
           custom_attr='total_of_issues'
         )
         repository.compose_with_query(
-          PullRequestsQueryBuilder(
-            has_total_count=True,
-            state=PullRequestsState.MERGED
-          )
+            StargazersQueryBuilder(
+              has_total_count=True
+            ),
+            custom_attr='total_of_stars'
         )
         repository.compose_with_query(
-          ReleasesQueryBuilder(
+            ReleasesQueryBuilder(
             has_total_count=True,
             order_by_field=ReleaseOrderByField.CREATED_AT,
             oder_by_direction=ReleaseOrderByDirection.DESC
           )
         )
         repository.compose_with_query(
-            StargazersQueryBuilder(
-              has_total_count=True
-            ),
-            custom_attr='total_of_stars'
+            OwnerQueryBuilder(
+                has_login=True
+            )
         )
         return repository
 
@@ -129,8 +123,10 @@ class GithubMostFamousRepoRepository:
         '''
         columns = (
             SerializeRule(column_name='name', dict_deserialize_rule=('name',)),
+            SerializeRule(column_name='owner', dict_deserialize_rule=('owner',)),
             SerializeRule(column_name='total_of_stars', dict_deserialize_rule=('stars',)),
-            SerializeRule(column_name='primary_language', dict_deserialize_rule=('primary_language',)),
+            SerializeRule(column_name='total_of_releases', dict_deserialize_rule=('total_of_releases',)),
+            SerializeRule(column_name='age', dict_deserialize_rule=('age',)),
             SerializeRule(column_name='url', dict_deserialize_rule=('url',)),
         )
         self.__data_persistance_repository.persist_data_in_csv(
@@ -166,17 +162,16 @@ class GithubMostFamousRepoRepository:
         get_total_count_from_attr = lambda value, attr: value.get(attr).get('totalCount')
         data = safe_get_value(response, ('data',), default_value={})
         for value in data.get('search', {}).get('nodes', []):
-            primary_language =  safe_get_value(value, ('primaryLanguage', 'name'))
+            owner = safe_get_value(value, ('owner', 'login'))
+            last_update_date=datetime_str_to_date(value.get('createdAt'))
+            age = round((date.today() - last_update_date) / timedelta(days=365))
             repositories.append(Repository(
                 name=value.get('name'),
-                created_at=datetime_str_to_date(value.get('createdAt')),
-                primary_language=primary_language,
-                closed_issues=get_total_count_from_attr(value, 'total_of_closed_issues'),
-                total_of_issues=get_total_count_from_attr(value, 'total_of_issues'),
-                merged_prs=get_total_count_from_attr(value, 'pullRequests'),
+                owner=owner,
                 total_of_releases=get_total_count_from_attr(value, 'releases'),
-                last_update_date=str_to_datetime(value.get('updatedAt')),
-                stars=get_total_count_from_attr(value, 'total_of_stars')
+                url=value.get('url'),
+                stars=get_total_count_from_attr(value, 'total_of_stars'),
+                age=age
             ))
         return repositories
 

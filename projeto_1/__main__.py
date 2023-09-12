@@ -11,3 +11,4 @@ async def start():
     await analyzer_servcice.analyse_most_famous_repositories()
 
 start()
+

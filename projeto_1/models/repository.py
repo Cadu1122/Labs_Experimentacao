@@ -12,3 +12,6 @@ class Repository(TypedDict):
     primary_language: str
     total_of_releases: int
     updated_at: datetime
+    url: str
+    owner: str
+    age: int
