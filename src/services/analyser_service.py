@@ -103,7 +103,6 @@ class AnalyzerService:
     # TODO: REFACTOR REFACTOR REFACTOR
     async def lab_02(self):
         repositories = await self.__github_most_famous_repo_repositoriy_lab_02.get_most_famous_repositories(
-            qtd_of_repositories=2,
             prefer_to_use_persited_repositories=False
         )
 
