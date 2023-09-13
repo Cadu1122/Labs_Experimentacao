@@ -1,1 +1,1 @@
-python -m projeto_1
+python -m src
