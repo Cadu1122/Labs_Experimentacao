@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from typing import Tuple
-from uuid import uuid4
+from statistics import median
 
 from src.core.constants import REPO_ANALYSIS_PATH
 from subprocess import run
@@ -30,19 +30,32 @@ class CodeMetricAnalyserService:
     def process_data(self, data: Tuple[str, RepositoryLab02]) -> Tuple[str, RepositoryLab02]:
         repository = data[1]
         class_metric_path = Path(f'{data[0]}/class.csv')
+        cbo = []
+        lcom = []
+        dit = []
         result = {
             'repo_name': repository.get('name'),
             'releases': repository.get('total_of_releases'),
+            'stars': repository.get('stars'),
             'age': repository.get('age_in_years'),
             'loc': 0,
+            'dit': 0,
             'cbo': 0,
             'lcom': 0
         }
         def mapper_function(row_data: Tuple, _):
             if row_data:
+                cbo.append(row_data[3])
+                lcom.append(row_data[11])
+                dit.append(row_data[8])
                 result['loc'] += int(row_data[35])
-                result['cbo'] += int(row_data[3])
-                result['lcom'] += int(row_data[11])
+        
+        cbo.sort()
+        lcom.sort()
+        dit.sort()
+        result['cbo'] = median(cbo) if cbo else None
+        result['lcom'] = median(lcom) if lcom else None
+        result['dit'] = dit[len(dit) - 1] if dit else None
 
         self.__data_persistance_repository.get_persited_data_in_csv(class_metric_path, mapper_function)
         save_data_path = f"resources/lab02_results/{repository.get('name')}.csv" 
