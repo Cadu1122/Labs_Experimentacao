@@ -3,12 +3,12 @@ from pathlib import Path
 from typing import Tuple
 from statistics import median
 
-from src.core.constants import REPO_ANALYSIS_PATH
+from lch.core.constants import REPO_ANALYSIS_PATH
 from subprocess import run
 
-from src.models.repository import RepositoryLab02
-from src.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
-from src.repository.data_persistance.models.serialize_rules import SerializeRule
+from lch.models.repository import RepositoryLab02
+from lch.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
+from lch.repository.data_persistance.models.serialize_rules import SerializeRule
 
 class CodeMetricAnalyserService:
     def __init__(self, data_persistance_repository: DataPersistanceRepository):

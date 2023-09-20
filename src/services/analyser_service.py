@@ -1,16 +1,16 @@
 from datetime import date
 from multiprocessing import Process
-from src.core.constants import MOST_FAMOUS_LANGUAGES, PREFER_GET_PERSISTED_DATA_OVER_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
-from src.models.analysis import Lab1AnalysisObject, get_lab1_analysis_object_from_repositories
-from src.models.repository import Repository
-from src.repository.github.github_most_famous_repo_repository import GithubMostFamousRepoRepository
-from src.repository.github.github_most_famous_repo_repository_lab_02 import GithubMostFamousRepoRepositoryLab02
-from src.services.clone_service import CloneService
-from src.services.code_metric_analyser_service import CodeMetricAnalyserService
-from src.services.graphic_service import GraphicService
-from src.shared.date_utils import diff_in_days
-from src.shared.logger import get_logger
-from src.shared.process_utils import create_listener_process, create_queue, maintain_process_alive_while_process_are_running
+from lch.core.constants import MOST_FAMOUS_LANGUAGES, PREFER_GET_PERSISTED_DATA_OVER_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
+from lch.models.analysis import Lab1AnalysisObject, get_lab1_analysis_object_from_repositories
+from lch.models.repository import Repository
+from lch.repository.github.github_most_famous_repo_repository import GithubMostFamousRepoRepository
+from lch.repository.github.github_most_famous_repo_repository_lab_02 import GithubMostFamousRepoRepositoryLab02
+from lch.services.clone_service import CloneService
+from lch.services.code_metric_analyser_service import CodeMetricAnalyserService
+from lch.services.graphic_service import GraphicService
+from lch.shared.date_utils import diff_in_days
+from lch.shared.logger import get_logger
+from lch.shared.process_utils import create_listener_process, create_queue, maintain_process_alive_while_process_are_running
 
 logger = get_logger(__name__)
 

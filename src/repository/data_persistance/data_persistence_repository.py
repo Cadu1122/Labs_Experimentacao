@@ -2,7 +2,7 @@ import csv
 from datetime import date, datetime
 from pathlib import Path
 from typing import Callable
-from src.repository.data_persistance.models.serialize_rules import SerializeRule
+from lch.repository.data_persistance.models.serialize_rules import SerializeRule
 
 class DataPersistanceRepository:
     

@@ -1,5 +1,5 @@
-from src.repository.github.query_builders.custom_composable_query import CustomComposableQuery
-from src.repository.github.query_builders.query_builder import BaseQuery, QueryBuilder
+from lch.repository.github.query_builders.custom_composable_query import CustomComposableQuery
+from lch.repository.github.query_builders.query_builder import BaseQuery, QueryBuilder
 
 
 class RepositoryQueryBuilder(BaseQuery):

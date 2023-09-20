@@ -1,8 +1,8 @@
 from datetime import date, datetime
 from typing import TypedDict, TypeVar
 
-from src.models.repository import Repository
-from src.shared.date_utils import diff_in_days, diff_in_hours
+from lch.models.repository import Repository
+from lch.shared.date_utils import diff_in_days, diff_in_hours
 
 Language = TypeVar('Language', bound=str)
 NumberOfRepositories = TypeVar('NumberOfRepositories', bound=int)

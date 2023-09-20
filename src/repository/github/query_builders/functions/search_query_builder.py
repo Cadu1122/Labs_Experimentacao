@@ -1,5 +1,5 @@
 from typing import Optional
-from src.repository.github.query_builders.objects.repository_query_builder import RepositoryQueryBuilder
+from lch.repository.github.query_builders.objects.repository_query_builder import RepositoryQueryBuilder
 from enum import Enum
 
 class SearchTypes(Enum):

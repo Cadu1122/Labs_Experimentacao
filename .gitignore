@@ -161,5 +161,11 @@ cython_debug/
 
 .vscode/
 .DS_Store
+resources/Q2/analysis/*/
+resources/Q2/clone/*/
+resources/Q2/error/analysis/*.json
+resources/Q2/error/clone/*.json
+resources/Q2/error/result/*.json
+resources/Q2/result/*.csv
 resources/debug/
 resources/core/token

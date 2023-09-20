@@ -1,4 +1,4 @@
-from src.repository.github.query_builders.query_builder import BaseQuery
+from lch.repository.github.query_builders.query_builder import BaseQuery
 from enum import Enum
 
 class PullRequestsState(Enum):

@@ -1,6 +1,6 @@
 FROM python:3.11
 
-COPY src /app/src
+COPY lch /app/lch
 COPY resources /app/resources
 
 CMD [ "pip", "install", "-r", "requirements.txt" ]

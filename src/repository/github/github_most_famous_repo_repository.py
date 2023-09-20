@@ -2,22 +2,22 @@ import base64
 from datetime import date, datetime
 from pathlib import Path
 from typing import Callable
-from src.models.repository import Repository
-from src.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
-from src.repository.data_persistance.models.serialize_rules import SerializeRule
-from src.repository.github.query_builders.functions.search_query_builder import SearchQueryBuilder, SearchTypes
-from src.repository.github.query_builders.objects.issues_query_builder import IssueStates, IssuesQueryBuilder
-from src.repository.github.query_builders.objects.pull_requests_query_builder import PullRequestsQueryBuilder, PullRequestsState
-from src.repository.github.query_builders.objects.releases_query_builder import ReleaseOrderByDirection, ReleaseOrderByField, ReleasesQueryBuilder
-from src.repository.github.query_builders.objects.repository_query_builder import RepositoryQueryBuilder
-from src.repository.github.query_builders.objects.stargazers_query_builder import StargazersQueryBuilder
-from src.shared.async_utils import create_async_task, get_async_results
-from src.shared.date_utils import datetime_str_to_date, str_to_datetime
-from src.shared.dict_utils import safe_get_value
-from src.shared.graphql_client import GraphqlClient
-from src.core.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
-from src.shared.logger import get_logger
-from src.services.token_service import get_token
+from lch.models.repository import Repository
+from lch.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
+from lch.repository.data_persistance.models.serialize_rules import SerializeRule
+from lch.repository.github.query_builders.functions.search_query_builder import SearchQueryBuilder, SearchTypes
+from lch.repository.github.query_builders.objects.issues_query_builder import IssueStates, IssuesQueryBuilder
+from lch.repository.github.query_builders.objects.pull_requests_query_builder import PullRequestsQueryBuilder, PullRequestsState
+from lch.repository.github.query_builders.objects.releases_query_builder import ReleaseOrderByDirection, ReleaseOrderByField, ReleasesQueryBuilder
+from lch.repository.github.query_builders.objects.repository_query_builder import RepositoryQueryBuilder
+from lch.repository.github.query_builders.objects.stargazers_query_builder import StargazersQueryBuilder
+from lch.shared.async_utils import create_async_task, get_async_results
+from lch.shared.date_utils import datetime_str_to_date, str_to_datetime
+from lch.shared.dict_utils import safe_get_value
+from lch.shared.graphql_client import GraphqlClient
+from lch.core.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
+from lch.shared.logger import get_logger
+from lch.services.token_service import get_token
 
 
 logger = get_logger(__name__)

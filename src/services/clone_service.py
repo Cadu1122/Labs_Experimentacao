@@ -2,8 +2,8 @@ import os
 from subprocess import run
 from typing import Tuple
 from uuid import uuid4
-from src.core.constants import CLONED_REPOSITORIES_PATH
-from src.models.repository import RepositoryLab02
+from lch.core.constants import CLONED_REPOSITORIES_PATH
+from lch.models.repository import RepositoryLab02
 
 class CloneService:
     def clone_repository(self, repository: RepositoryLab02) -> Tuple[str, RepositoryLab02]:

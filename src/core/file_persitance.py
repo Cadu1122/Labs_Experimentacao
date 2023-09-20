@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from src.core.constants import DEBUG_PATH, GRAPHIC_PATH, REPOSITORIES_PATH
+from lch.core.constants import DEBUG_PATH, GRAPHIC_PATH, REPOSITORIES_PATH
 
 
 def ensure_all_necessary_paths_exist():

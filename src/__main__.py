@@ -1,6 +1,6 @@
 
-from src.core.class_container import ClassContainer
-from src.shared.async_utils import run_async_function
+from lch.core.class_container import ClassContainer
+from lch.shared.async_utils import run_async_function
 
 
 @run_async_function

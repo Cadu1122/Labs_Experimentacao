@@ -1,4 +1,4 @@
-from src.repository.github.query_builders.query_builder import BaseQuery, QueryBuilder
+from lch.repository.github.query_builders.query_builder import BaseQuery, QueryBuilder
 
 
 class LatestReleaseQueryBuilder(BaseQuery):

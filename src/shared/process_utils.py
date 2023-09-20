@@ -3,7 +3,7 @@ from queue  import Empty
 from time import sleep
 from typing import Callable, Tuple
 
-from src.core.class_container import ClassContainer
+from lch.core.class_container import ClassContainer
 
 class Wrapper:
     def __init__(

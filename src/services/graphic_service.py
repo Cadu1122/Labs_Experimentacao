@@ -1,7 +1,7 @@
 # from pandas import DataFrame
 from typing import Any
 
-from src.core.constants import GRAPHIC_PATH
+from lch.core.constants import GRAPHIC_PATH
 
 
 class GraphicService:

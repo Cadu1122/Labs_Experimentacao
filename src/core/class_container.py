@@ -15,7 +15,7 @@ class ClassContainer:
     __instances: dict[Classes, any] = {}
 
     def get_analyzer_service(self):
-        from src.services.analyser_service import AnalyzerService
+        from lch.services.analyser_service import AnalyzerService
         service: AnalyzerService = self.__instances.get(self.Classes.ANALYZER_SERVICE)
         if not service:
             service = AnalyzerService(
@@ -29,7 +29,7 @@ class ClassContainer:
         return service
 
     def get_clone_service(self):
-        from src.services.clone_service import CloneService
+        from lch.services.clone_service import CloneService
         service: CloneService = self.__instances.get(self.Classes.CLONE_SERVICE)
         if not service:
             service = CloneService()
@@ -37,7 +37,7 @@ class ClassContainer:
         return service
     
     def get_code_analysis_service(self):
-        from src.services.code_metric_analyser_service import CodeMetricAnalyserService
+        from lch.services.code_metric_analyser_service import CodeMetricAnalyserService
         service: CodeMetricAnalyserService = self.__instances.get(self.Classes.CODE_METRIC_ANALYSER_SERVICE)
         if not service:
             service = CodeMetricAnalyserService(
@@ -47,7 +47,7 @@ class ClassContainer:
         return service
     
     def __get_graphic_service(self):
-        from src.services.graphic_service import GraphicService
+        from lch.services.graphic_service import GraphicService
         service: GraphicService = self.__instances.get(self.Classes.GRAPHIC_SERVICE)
         if not service:
             service = GraphicService()
@@ -55,7 +55,7 @@ class ClassContainer:
         return service
 
     def __get_github_repository(self):
-        from src.repository.github.github_most_famous_repo_repository import GithubMostFamousRepoRepository
+        from lch.repository.github.github_most_famous_repo_repository import GithubMostFamousRepoRepository
         repository: GithubMostFamousRepoRepository = self.__instances.get(self.Classes.GITHUB_REPOSITORY)
         if not repository:
             repository = GithubMostFamousRepoRepository(
@@ -66,7 +66,7 @@ class ClassContainer:
         return repository
 
     def __get_github_repository_lab_02(self):
-        from src.repository.github.github_most_famous_repo_repository_lab_02 import GithubMostFamousRepoRepositoryLab02
+        from lch.repository.github.github_most_famous_repo_repository_lab_02 import GithubMostFamousRepoRepositoryLab02
         repository: GithubMostFamousRepoRepositoryLab02 = self.__instances.get(self.Classes.GITHUB_REPOSITORY_LAB_O2)
         if not repository:
             repository = GithubMostFamousRepoRepositoryLab02(
@@ -77,7 +77,7 @@ class ClassContainer:
         return repository
     
     def __get_data_persitance_repository(self):
-        from src.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
+        from lch.repository.data_persistance.data_persistence_repository import DataPersistanceRepository
         repository: DataPersistanceRepository = self.__instances.get(self.Classes.DATA_PERSISTANCE_REPOSITORY)
         if not repository:
             repository = DataPersistanceRepository()
@@ -85,7 +85,7 @@ class ClassContainer:
         return repository
 
     def __get_graphql_client(self):
-        from src.shared.graphql_client import GraphqlClient
+        from lch.shared.graphql_client import GraphqlClient
         client: GraphqlClient = self.__instances.get(self.Classes.GRAPHQL_CLIENT)
         if not client:
             client = GraphqlClient()
