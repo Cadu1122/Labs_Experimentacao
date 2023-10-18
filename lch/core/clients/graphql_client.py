@@ -4,9 +4,12 @@ import json
 from typing import Callable
 import aiohttp
 from aiohttp import ClientResponse
+from lch.core.logger import get_logger
 
 from lch.shared.exceptions.grapql_client_exceptions import Unauthorized, UnexpectedError
 from lch.core.config.constants import PERSIT_GRAPQHL_QUERIES
+
+logger = get_logger(__name__)
 
 class GraphqlClient:
     async def execute_query(
@@ -22,6 +25,7 @@ class GraphqlClient:
                 f.write(query)
         authed_header = self.__get_auth_header(auth_token)
         data = json.dumps({'query': query})
+        logger.debug('Executing query...')
         async with aiohttp.ClientSession(headers=authed_header) as session:
             async with session.post(path, data=data) as response:
                 return await self.__handle_response(response, custom_response_handler)
@@ -34,6 +38,7 @@ class GraphqlClient:
 
     async def __handle_response(self, response: ClientResponse, custom_response_handler: Callable[[any], any] = lambda value: value):
         payload = await response.json()
+        logger.debug('Handling response...')
         status_code = response.status
         if status_code > HTTPStatus.OK:
             raw_error = str(await response.content.read())
@@ -41,6 +46,7 @@ class GraphqlClient:
         return custom_response_handler(payload)
 
     def __handle_error(self, status_code: int, error: str):
+        logger.debug(f'Error detected in request, status code {status_code}')
         if status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             raise UnexpectedError(error)
         if status_code == HTTPStatus.UNAUTHORIZED:

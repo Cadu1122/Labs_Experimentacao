@@ -2,7 +2,7 @@ import os
 from subprocess import run
 from typing import Tuple
 from uuid import uuid4
-from lch.core.constants import CLONED_REPOSITORIES_PATH
+from lch.core.config.constants import CLONED_REPOSITORIES_PATH
 from lch.models.repository import RepositoryLab02
 
 class CloneService:

@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Tuple
 from statistics import median
 
-from lch.core.constants import REPO_ANALYSIS_PATH
+from lch.core.config.constants import REPO_ANALYSIS_PATH
 from subprocess import run
 
 from lch.models.repository import RepositoryLab02

@@ -1,6 +1,6 @@
 from datetime import date
 from multiprocessing import Process
-from lch.core.constants import MOST_FAMOUS_LANGUAGES, PREFER_GET_PERSISTED_DATA_OVER_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
+from lch.core.config.constants import MOST_FAMOUS_LANGUAGES, PREFER_GET_PERSISTED_DATA_OVER_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
 from lch.models.analysis import Lab1AnalysisObject, get_lab1_analysis_object_from_repositories
 from lch.models.repository import Repository
 from lch.repository.github.github_most_famous_repo_repository import GithubMostFamousRepoRepository

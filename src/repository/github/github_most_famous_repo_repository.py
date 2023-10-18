@@ -13,9 +13,9 @@ from lch.repository.github.query_builders.objects.repository_query_builder impor
 from lch.repository.github.query_builders.objects.stargazers_query_builder import StargazersQueryBuilder
 from lch.shared.async_utils import create_async_task, get_async_results
 from lch.shared.date_utils import datetime_str_to_date, str_to_datetime
-from lch.shared.dict_utils import safe_get_value
+from lch.shared.dict_shared import safe_get_value
 from lch.shared.graphql_client import GraphqlClient
-from lch.core.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
+from lch.core.config.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
 from lch.shared.logger import get_logger
 from lch.services.token_service import get_token
 
