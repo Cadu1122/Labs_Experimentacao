@@ -45,3 +45,4 @@ class GraphqlClient:
             raise UnexpectedError(error)
         if status_code == HTTPStatus.UNAUTHORIZED:
             raise Unauthorized(error)
+        raise UnexpectedError(error)

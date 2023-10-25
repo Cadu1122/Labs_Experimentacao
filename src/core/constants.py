@@ -2,7 +2,7 @@ import os
 
 BASE_GRAPTHQL_PATH = 'https://api.github.com/graphql'
 
-DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH = int(os.getenv('DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH', '50'))
+DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH = int(os.getenv('DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH', '50'))
 TOTAL_QUANTITY_OF_REPOSITORIES = int(os.getenv('TOTAL_QUANTITY_OF_REPOSITORIES', '1_000'))
 
 # 1 == True | 0 == False
@@ -17,3 +17,5 @@ REPOSITORIES_PATH = 'resources/repositories.csv'
 GRAPHIC_PATH = 'resources/graphic/'
 CLONED_REPOSITORIES_PATH = 'resources/clone_repos'
 REPO_ANALYSIS_PATH = 'resources/repo_anaylisis'
+
+QUERIES_CHUNK_SIZE = int(os.getenv('QUERIES_CHUNK_SIZE', '30'))

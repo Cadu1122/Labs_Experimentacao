@@ -19,7 +19,7 @@ class GraphqlClient:
         auth_token: str,
         custom_response_handler: Callable[[any], any] = lambda value: value
     ):
-        if PERSIT_GRAPQHL_QUERIES:
+        if False:
             now = datetime.now().strftime('%d-%m-%Y_%H-%M-%S.%f')
             with open(f'resources/debug/{now}', 'w+') as f:
                 f.write(query)
@@ -32,6 +32,7 @@ class GraphqlClient:
     
 
     def __get_auth_header(self, token: str):
+        token = token.replace('\n', '')
         return {
             'Authorization': f'Bearer {token}'
         }

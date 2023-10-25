@@ -8,6 +8,13 @@ def datetime_str_to_date(value: str):
 def diff_in_years(a: date, b: date):
     return (a - b).days // 365
 
+def diff_in_hours(a: datetime, b: datetime):
+    if a > b:
+        diff = (a - b).total_seconds()
+    else:
+        diff = (b - a).total_seconds()
+    return divmod(diff, 3600)[0]
+
 def datetime_str_to_date(value: str):
     if value:
         value = value.split('T')[0]

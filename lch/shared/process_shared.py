@@ -1,3 +1,4 @@
+import asyncio
 from enum import Enum, auto
 from multiprocessing import Process, Queue
 from queue import Empty
@@ -42,7 +43,10 @@ class BackgroundMessagersProcessPool:
             keep_on_running = True
             while keep_on_running:  
                 st = time()
-                result = function()
+                if asyncio.iscoroutinefunction(function):
+                    result = asyncio.run(function)
+                else:
+                    result = function()
                 producer_queue.put(result)
                 end = round(time() - st)
                 keep_on_running = end < timeout

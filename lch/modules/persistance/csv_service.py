@@ -42,18 +42,42 @@ class CsvService:
             csv_writer.writerow(column_names)
             csv_writer.writerows(rows)
 
+    def persist_shallow_dict_in_csv(self, save_path: str, data: dict[str, str]):
+        '''
+        ---
+        Receive a shallow dict (one level dict) and persit in csv
+        ---
+        Params
+            - save_path: The path to save
+            - data: One level dict
+        ---
+        Return:
+            None
+        ---
+        Disclaimer:
+            The columns are the dict keys
+        '''
+        if data:
+            columns = list(data[0].keys())
+            formatted_values = [tuple(value.values()) for value in data]
+            with open(save_path, 'w+') as f:
+                csv_writer = csv.writer(f)
+                csv_writer.writerow(columns)
+                csv_writer.writerows(formatted_values)
+
     def get_persited_data_in_csv(
         self,
         file_path: Path,
         mapper_function: Callable[[tuple[any], tuple[str]], any] = None
     ):
         result: list[dict] = []
-        mapper_function = mapper_function if mapper_function else self.__transform_row_in_data
-        with open(file_path,  'r') as f:
-            csv_reader = csv.reader(f)
-            columns = next(csv_reader)
-            for row in csv_reader:
-                result.append(mapper_function(row, columns))
+        if file_path.exists():
+            mapper_function = mapper_function if mapper_function else self.__transform_row_in_data
+            with open(file_path,  'r') as f:
+                csv_reader = csv.reader(f)
+                columns = next(csv_reader)
+                for row in csv_reader:
+                    result.append(mapper_function(row, columns))
         return result
     
     def get_persited_data_in_csv_generator_version(

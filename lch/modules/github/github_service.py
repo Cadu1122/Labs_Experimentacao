@@ -1,7 +1,7 @@
 import base64
 from pathlib import Path
 from typing import Any, Callable
-from lch.core.config.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH, GITHUB_AUTH_TOKEN_PATH
+from lch.core.config.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH, GITHUB_AUTH_TOKEN_PATH
 from lch.core.clients.graphql_client import GraphqlClient
 from lch.core.logger import get_logger
 from lch.modules.github.models.query_builders.functions.search_query_builder import SearchQueryBuilder, SearchTypes
@@ -33,13 +33,13 @@ class GithubService:
         logger.debug(f'Preparing to execute query -> {search}')
         self.__validate_query_builder_for_search(query)
         search_query_builder = SearchQueryBuilder(
-            first=DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH,
+            first=DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH,
             search_type=SearchTypes.REPOSITORY,
             search_query=search,
             has_page_info=True
         )
         search_query_builder.with_repository(query)
-        queries = self.__mount_all_possible_queries(search_query_builder, quantity_of_itens)
+        queries = self.mount_all_possible_queries(search_query_builder, quantity_of_itens)
         return await self.__execute_queries(queries, custom_mapper)
 
     def clone(self, url: str, save_path: Path):
@@ -60,13 +60,13 @@ class GithubService:
         if not isinstance(query, RepositoryQueryBuilder):
             raise ValueError(f'Query of type {type(query)} is not supported')
     
-    def __mount_all_possible_queries(self, query: QueryBuilder, quantity_of_itens: int):
+    def mount_all_possible_queries(self, query: QueryBuilder, quantity_of_itens: int):
         queries: list[str] = []
-        quantity_of_queries = quantity_of_itens // DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH
+        quantity_of_queries = quantity_of_itens // DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH
         logger.debug('Mouting every possible paginated query')
         for i in range(quantity_of_queries):
             cursor = self.__create_cursor(
-                page=i*DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH
+                page=i*DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH
             )
             queries.append(query.build_query(cursor))
         logger.debug(f'{len(queries)} queries mounted')
@@ -102,6 +102,9 @@ class GithubService:
         responses = await run_tasks(tasks)
         for response in responses:
             response = response_handler(response)
-            result.append(response)
+            if type(response) is list:
+                result.extend(response)
+            else:
+                result.append(response)
         logger.debug(f'{len(responses)} responses gotten')
         return result

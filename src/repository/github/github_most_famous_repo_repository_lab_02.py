@@ -13,7 +13,7 @@ from lch.shared.async_utils import create_async_task, get_async_results
 from lch.shared.date_utils import datetime_str_to_date, diff_in_years, str_to_datetime
 from lch.shared.dict_shared import safe_get_value
 from lch.shared.graphql_client import GraphqlClient
-from lch.core.config.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
+from lch.core.config.constants import BASE_GRAPTHQL_PATH, DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH, TOTAL_QUANTITY_OF_REPOSITORIES
 from lch.shared.logger import get_logger
 from lch.services.token_service import get_token
 
@@ -79,14 +79,14 @@ class GithubMostFamousRepoRepositoryLab02:
               for query, so if you want to get 100 repositories this function will return two queries.
               
               The quantity of repositories that can be obtained by query can be modified changing
-              the value of the DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH constant
+              the value of the DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH constant
         '''
         queries = [base_search_query.build_query()]
-        quantity_of_queries = data_quantity // DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH
+        quantity_of_queries = data_quantity // DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH
         for i in range(quantity_of_queries - 1):
             i += 1
             cursor = self.__create_cursor(
-                next_page_number=i*DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH
+                next_page_number=i*DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH
             )
             queries.append(base_search_query.build_query(cursor))
         return queries
@@ -183,7 +183,7 @@ class GithubMostFamousRepoRepositoryLab02:
 
         logger.debug(f'Preparing to obtain the {qtd_of_repositories} famous repositories')
         search_query = SearchQueryBuilder(
-            first=DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH,
+            first=DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH,
             search_type=SearchTypes.REPOSITORY,
             search_query="stars:>100 language:Java",
             has_page_info=True

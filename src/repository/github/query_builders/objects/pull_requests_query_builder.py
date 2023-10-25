@@ -3,6 +3,7 @@ from enum import Enum
 
 class PullRequestsState(Enum):
     MERGED = 'MERGED'
+    CLOSED = 'CLOSED'
 
 class PullRequestsQueryBuilder(BaseQuery):
     def __init__(

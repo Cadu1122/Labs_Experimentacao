@@ -2,7 +2,7 @@ import os
 
 BASE_GRAPTHQL_PATH = 'https://api.github.com/graphql'
 
-DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH = int(os.getenv('DEFAULT_QUANTITY_OF_REPOSITORIES_TO_FETCH', '50'))
+DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH = int(os.getenv('DEFAULT_QUANTITY_OF_ITEMS_TO_FETCH', '50'))
 TOTAL_QUANTITY_OF_REPOSITORIES = int(os.getenv('TOTAL_QUANTITY_OF_REPOSITORIES', '1_000'))
 
 # 1 == True | 0 == False
@@ -21,3 +21,7 @@ CLONED_REPOSITORIES_PATH = 'resources/clone_repos'
 REPO_ANALYSIS_PATH = 'resources/repo_anaylisis'
 
 GITHUB_AUTH_TOKEN_PATH = 'resources/github/TOKEN'
+GITHUB_AUTH_TOKEN_V2_PATH = 'resources/github/tokens.json'
+
+MAX_REQUESTS_PER_HOUR_IN_GITHUB = int(os.getenv('MAX_REQUESTS_PER_HOUR_IN_GITHUB', '5_000'))
+MAX_REQUESTS_TO_GITHUB = 5_000
